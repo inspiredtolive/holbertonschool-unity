@@ -3020,6 +3020,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114092377417146856, guid: 8b3fb5cacdcd29942a3ed05eef98b177,
+        type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 1082470431}
     - target: {fileID: 143693387610160112, guid: 8b3fb5cacdcd29942a3ed05eef98b177,
         type: 3}
       propertyPath: m_Height

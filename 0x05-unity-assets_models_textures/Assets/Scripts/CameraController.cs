@@ -2,20 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Provides third-person camera tracking.
+/// </summary>
 public class CameraController : MonoBehaviour
 {
     public float RotationSpeed = 1;
     public Transform Target;
     float mouseX, mouseY;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Hides cursor and locks cursor to center of view.
+    /// </summary>
     void Start()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Updates the camera position based on mouse input.
+    /// </summary>
     void LateUpdate()
     {
         mouseX += Input.GetAxis("Mouse X") * RotationSpeed;
