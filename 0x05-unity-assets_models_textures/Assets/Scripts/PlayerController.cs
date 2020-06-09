@@ -8,7 +8,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public Transform cam;
-    private Transform transform;
+    private Transform playerTransform;
     private CharacterController controller;
     private Vector3 spawnPosition;
     private float speed = 10f;
@@ -22,8 +22,8 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        transform = GetComponent<Transform>();
-        spawnPosition = transform.position;
+        playerTransform = GetComponent<Transform>();
+        spawnPosition = playerTransform.position;
         spawnPosition.y += 20;
     }
 
@@ -57,9 +57,9 @@ public class PlayerController : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime + force);
 
-        if (transform.position.y < -20)
+        if (playerTransform.position.y < -20)
         {
-            transform.position = spawnPosition;
+            playerTransform.position = spawnPosition;
         }
     }
 }
