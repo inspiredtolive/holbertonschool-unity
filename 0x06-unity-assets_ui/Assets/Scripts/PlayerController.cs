@@ -37,8 +37,8 @@ public class PlayerController : MonoBehaviour
             velocity.y = -0.01f;
         }
 
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+        float x = Input.GetAxisRaw("Horizontal");
+        float z = Input.GetAxisRaw("Vertical");
 
         Vector3 dir = new Vector3(x, 0f, z).normalized;
         Vector3 force = Vector3.zero;
