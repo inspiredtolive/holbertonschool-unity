@@ -7,6 +7,7 @@ using UnityEngine;
 /// </summary>
 public class CameraController : MonoBehaviour
 {
+    public GameObject GameController;
     public Transform playerTransform;
     private Transform camTransform;
     float mouseX, mouseY;
@@ -15,11 +16,9 @@ public class CameraController : MonoBehaviour
     /// <summary>
     /// Initializes variables and locks cursor.
     /// </summary>
-    void Start()
+    void Awake()
     {
         camTransform = GetComponent<Transform>();
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
         distance = Vector3.Distance(camTransform.position, playerTransform.position);
     }
 
@@ -28,6 +27,14 @@ public class CameraController : MonoBehaviour
     /// </summary>
     void LateUpdate()
     {
+        if (GameController.GetComponent<PauseMenu>().isPaused)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            return;
+        }
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
         mouseX += Input.GetAxis("Mouse X");
         mouseY += Input.GetAxis("Mouse Y");
         mouseY = Mathf.Clamp(mouseY, -35, 60);
