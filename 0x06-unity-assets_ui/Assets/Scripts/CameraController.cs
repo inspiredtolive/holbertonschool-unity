@@ -9,7 +9,8 @@ public class CameraController : MonoBehaviour
 {
     public GameObject GameController;
     public Transform playerTransform;
-    private Transform camTransform;
+    public bool isInverted = false;
+    Transform camTransform;
     float mouseX, mouseY;
     float distance;
 
@@ -20,6 +21,14 @@ public class CameraController : MonoBehaviour
     {
         camTransform = GetComponent<Transform>();
         distance = Vector3.Distance(camTransform.position, playerTransform.position);
+        if (PlayerPrefs.GetString("IsInverted") == "True")
+        {
+            isInverted = true;
+        }
+        else
+        {
+            isInverted = false;
+        }
     }
 
     /// <summary>
@@ -40,7 +49,15 @@ public class CameraController : MonoBehaviour
         mouseY = Mathf.Clamp(mouseY, -35, 60);
 
         Vector3 dir = new Vector3(0, 0, -distance);
-        Quaternion rotation = Quaternion.Euler(-mouseY, mouseX, 0);
+        Quaternion rotation; 
+        if (isInverted)
+        {
+            rotation = Quaternion.Euler(mouseY, mouseX, 0);
+        }
+        else 
+        {
+            rotation = Quaternion.Euler(-mouseY, mouseX, 0);
+        }
         camTransform.position = playerTransform.position + rotation * dir;
         
         transform.LookAt(playerTransform.position);

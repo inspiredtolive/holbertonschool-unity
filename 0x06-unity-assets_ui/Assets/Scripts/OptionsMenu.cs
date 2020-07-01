@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -8,11 +9,36 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class OptionsMenu : MonoBehaviour
 {
+    public Toggle InvertYToggle;
+
+    void Awake()
+    {
+        if (PlayerPrefs.GetString("IsInverted") == "True")
+        {
+            InvertYToggle.isOn = true;
+        }
+    }
+
     /// <summary>
-    /// Loads the main menu scene.
+    /// Loads the previous scene.
     /// </summary>
     public void Back()
     {
-        SceneManager.LoadSceneAsync("MainMenu");
+        if (PlayerPrefs.GetString("PreviousScene") == "")
+        {
+            SceneManager.LoadSceneAsync("MainMenu");
+        }
+        else
+        {
+            SceneManager.LoadSceneAsync(PlayerPrefs.GetString("PreviousScene"));
+        }
+    }
+
+    /// <summary>
+    /// Applys/saves selected options.
+    /// </summary>
+    public void Apply()
+    {
+        PlayerPrefs.SetString("IsInverted", InvertYToggle.isOn.ToString());
     }
 }

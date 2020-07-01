@@ -33,6 +33,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void Options()
     {
+        PlayerPrefs.SetString("PreviousScene", SceneManager.GetActiveScene().name);
         SceneManager.LoadSceneAsync("Options");
     }
 }
