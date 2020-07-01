@@ -8,7 +8,9 @@ using UnityEngine;
 /// </summary>
 public class Timer : MonoBehaviour
 {
-    public Text timerText;
+    public GameObject WinCanvas;
+    public Text TimerText;
+    public Text FinalTime;
     private float time = 0f;
     private bool stop = false;
 
@@ -20,8 +22,18 @@ public class Timer : MonoBehaviour
         if (stop == false)
         {
             time += Time.deltaTime;
-            timerText.text = string.Format("{0:0}:{1:00}.{2:00}", time / 60, time % 60, time * 100 % 100);
+            TimerText.text = string.Format("{0:0}:{1:00}.{2:00}", time / 60, time % 60, time * 100 % 100);
         }
+    }
+
+    /// <summary>
+    /// Displays the win UI.
+    /// </summary>
+    public void Win()
+    {
+        WinCanvas.SetActive(true);
+        FinalTime.text = string.Format("{0:0}:{1:00}.{2:00}", time / 60, time % 60, time * 100 % 100);
+        Time.timeScale = 0f;
     }
 
     /// <summary>
@@ -33,8 +45,9 @@ public class Timer : MonoBehaviour
         if (other.name == "WinFlag")
         {
             stop = true;
-            timerText.fontSize = 60;
-            timerText.color = Color.green;
+            TimerText.fontSize = 60;
+            TimerText.color = Color.green;
+            Win();
         }
     }
 }

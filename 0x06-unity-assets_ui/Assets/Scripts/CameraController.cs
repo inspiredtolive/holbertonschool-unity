@@ -9,6 +9,7 @@ public class CameraController : MonoBehaviour
 {
     public GameObject GameController;
     public Transform playerTransform;
+    public GameObject WinCanvas;
     public bool isInverted = false;
     Transform camTransform;
     float mouseX, mouseY;
@@ -36,7 +37,7 @@ public class CameraController : MonoBehaviour
     /// </summary>
     void LateUpdate()
     {
-        if (GameController.GetComponent<PauseMenu>().isPaused)
+        if (GameController.GetComponent<PauseMenu>().isPaused || WinCanvas.activeSelf)
         {
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
