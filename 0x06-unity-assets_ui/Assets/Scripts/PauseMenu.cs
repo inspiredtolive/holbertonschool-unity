@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Represents the pause menu.
@@ -46,5 +47,32 @@ public class PauseMenu : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         PauseCanvas.SetActive(false);
+    }
+
+    /// <summary>
+    /// Reloads the current scene.
+    /// </summary>
+    public void Restart()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
+    }
+
+    /// <summary>
+    /// Loads the main menu.
+    /// </summary>
+    public void MainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadSceneAsync("MainMenu");
+    }
+
+    /// <summary>
+    /// Loads the option menu.
+    /// </summary>
+    public void Options()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadSceneAsync("Options");
     }
 }
