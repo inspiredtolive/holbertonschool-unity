@@ -8,6 +8,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public Transform cam;
+    public GameObject CharacterModel;
     private Transform playerTransform;
     private CharacterController controller;
     private Vector3 spawnPosition;
@@ -43,11 +44,13 @@ public class PlayerController : MonoBehaviour
         Vector3 dir = new Vector3(x, 0f, z).normalized;
         Vector3 force = Vector3.zero;
 
+
         if (dir.magnitude >= 0.1f)
         {
             float targetAngle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             force =  moveDir * speed * Time.deltaTime;
+            transform.LookAt(transform.position + moveDir);
         }
 
         if (controller.isGrounded && Input.GetButton("Jump"))
@@ -55,8 +58,7 @@ public class PlayerController : MonoBehaviour
             velocity.y += Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
         velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime + force);
-
+        controller.Move(velocity * Time.deltaTime + force); 
         if (playerTransform.position.y < -20)
         {
             playerTransform.position = spawnPosition;
