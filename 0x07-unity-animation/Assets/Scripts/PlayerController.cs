@@ -8,14 +8,13 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public Transform cam;
-    public GameObject CharacterModel;
-    private Transform playerTransform;
-    private CharacterController controller;
-    private Vector3 spawnPosition;
-    private float speed = 10f;
-    private float jumpHeight = 2f;
-    private float gravity = -9.81f;
-    private Vector3 velocity;
+    Animator animator;
+    CharacterController controller;
+    Vector3 spawnPosition;
+    float speed = 10f;
+    float jumpHeight = 2f;
+    float gravity = -9.81f;
+    Vector3 velocity;
 
     /// <summary>
     /// Initializes components and spawn position.
@@ -23,8 +22,8 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        playerTransform = GetComponent<Transform>();
-        spawnPosition = playerTransform.position;
+        animator = GetComponentInChildren<Animator>();
+        spawnPosition = transform.position;
         spawnPosition.y += 20;
     }
 
@@ -50,7 +49,12 @@ public class PlayerController : MonoBehaviour
             float targetAngle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             force =  moveDir * speed * Time.deltaTime;
+            animator.SetBool("isRunning", true);
             transform.LookAt(transform.position + moveDir);
+        }
+        else
+        {
+            animator.SetBool("isRunning", false);
         }
 
         if (controller.isGrounded && Input.GetButton("Jump"))
@@ -58,10 +62,10 @@ public class PlayerController : MonoBehaviour
             velocity.y += Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
         velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime + force); 
-        if (playerTransform.position.y < -20)
+        controller.Move(velocity * Time.deltaTime + force);
+        if (transform.position.y < -20)
         {
-            playerTransform.position = spawnPosition;
+            transform.position = spawnPosition;
         }
     }
 }
