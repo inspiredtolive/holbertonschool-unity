@@ -57,9 +57,14 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("isRunning", false);
         }
 
-        if (controller.isGrounded && Input.GetButton("Jump"))
+        if (controller.isGrounded && !animator.GetBool("isJumping") && Input.GetButton("Jump"))
         {
             velocity.y += Mathf.Sqrt(jumpHeight * -2f * gravity);
+            animator.SetBool("isJumping", true);
+        }
+        else if (controller.isGrounded)
+        {
+            animator.SetBool("isJumping", false);
         }
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime + force);
