@@ -65,12 +65,14 @@ public class PlayerController : MonoBehaviour
         else if (controller.isGrounded)
         {
             animator.SetBool("isJumping", false);
+            animator.SetBool("isFalling", false);
         }
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime + force);
-        if (transform.position.y < -20)
+        if (transform.position.y < -16)
         {
             transform.position = spawnPosition;
+            animator.SetBool("isFalling", true);
         }
     }
 }
