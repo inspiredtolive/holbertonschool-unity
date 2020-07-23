@@ -9,6 +9,7 @@ using UnityEngine;
 public class Timer : MonoBehaviour
 {
     public GameObject WinCanvas;
+    public GameObject BGM;
     public Text TimerText;
     public Text FinalTime;
     private float time = 0f;
@@ -48,6 +49,7 @@ public class Timer : MonoBehaviour
             TimerText.fontSize = 60;
             TimerText.color = Color.green;
             Win();
+            BGM.GetComponent<AudioSource>().Pause();
         }
     }
 }
