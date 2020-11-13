@@ -1,11 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 
 public class AmmoController : MonoBehaviour
 {
+    /// <summary>
+    /// The AR Camera.
+    /// </summary>
     public Camera cam;
+    /// <summary>
+    /// The Text that displays the score.
+    /// </summary>
+    public Text scoreUI;
+    int score = 0;
+    /// <summary>
+    /// The UI footer.
+    /// </summary>
+    public GameObject footer;
+    /// <summary>
+    /// An array of ammo UIs.
+    /// </summary>
+    public GameObject[] remainingAmmoUI;
+    int remainingAmmo = 6;
     float distance = 0.25f;
     enum status 
     {
@@ -24,6 +42,7 @@ public class AmmoController : MonoBehaviour
     {
         coll = GetComponent<SphereCollider>();
         rb = GetComponent<Rigidbody>();
+        footer.SetActive(true);
         plane = GameObject.FindWithTag("Plane").GetComponent<ARPlane>();
         restrictRBProps();
     }
@@ -37,10 +56,25 @@ public class AmmoController : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Plane") || collision.gameObject.CompareTag("Target"))
+        if (collision.gameObject.CompareTag("Plane"))
         {
-            restrictRBProps();
-            mode = status.Loaded;
+            if (remainingAmmo > 0)
+            {
+                remainingAmmoUI[--remainingAmmo].SetActive(false);
+                restrictRBProps();
+                mode = status.Loaded;
+            }
+        }
+        else if (collision.gameObject.CompareTag("Target"))
+        {
+            score += 10;
+            scoreUI.text = score.ToString();
+            if (remainingAmmo > 0)
+            {
+                remainingAmmoUI[--remainingAmmo].SetActive(false);
+                restrictRBProps();
+                mode = status.Loaded;
+            }
         }
     }
 
@@ -93,8 +127,12 @@ public class AmmoController : MonoBehaviour
         {
             if (transform.position.y < plane.center.y)
             {
-                restrictRBProps();
-                mode = status.Loaded;
+                if (remainingAmmo > 0)
+                {
+                    remainingAmmoUI[--remainingAmmo].SetActive(false);
+                    restrictRBProps();
+                    mode = status.Loaded;
+                }
             }
         }
     }
