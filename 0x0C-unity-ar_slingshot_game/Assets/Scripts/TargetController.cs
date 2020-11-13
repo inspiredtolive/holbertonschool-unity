@@ -15,7 +15,19 @@ public class TargetController : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        RandomSpawn();
         Invoke("NavMeshMove", Random.Range(2.5f, 3.5f));
+    }
+
+    void RandomSpawn()
+    {
+        Vector3 randomDirection = Random.insideUnitSphere * walkRadius;
+        randomDirection += transform.position;
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(randomDirection, out hit, walkRadius, 1))
+        { 
+            transform.position = hit.position;  
+        }
     }
 
     void NavMeshMove()
@@ -23,9 +35,9 @@ public class TargetController : MonoBehaviour
         Vector3 randomDirection = Random.insideUnitSphere * walkRadius;
         randomDirection += transform.position;
         NavMeshHit hit;
-        NavMesh.SamplePosition(randomDirection, out hit, walkRadius, 1);
         Vector3 finalPosition;
-        if (NavMesh.SamplePosition(randomDirection, out hit, walkRadius, 1)) {
+        if (NavMesh.SamplePosition(randomDirection, out hit, walkRadius, 1))
+        {
             finalPosition = hit.position;            
             agent.SetDestination(finalPosition);
         }

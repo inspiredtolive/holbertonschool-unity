@@ -23,6 +23,14 @@ public class AmmoController : MonoBehaviour
     /// An array of ammo UIs.
     /// </summary>
     public GameObject[] remainingAmmoUI;
+    /// <summary>
+    /// The target to hit.
+    /// </summary>
+    public GameObject m_Target;
+    /// <summary>
+    /// A button to replay with the same plane.
+    /// </summary>
+    public GameObject PlayAgainBtn;
     int remainingAmmo = 6;
     float distance = 0.25f;
     enum status 
@@ -37,6 +45,7 @@ public class AmmoController : MonoBehaviour
     Vector2 initalPos;
     Vector2 releasePos;
     ARPlane plane;
+    List<GameObject> targets = new List<GameObject>();
 
     void Start()
     {
@@ -45,6 +54,9 @@ public class AmmoController : MonoBehaviour
         footer.SetActive(true);
         plane = GameObject.FindWithTag("Plane").GetComponent<ARPlane>();
         restrictRBProps();
+        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
+        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
+        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
     }
 
     void restrictRBProps()
@@ -67,15 +79,38 @@ public class AmmoController : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Target"))
         {
+            targets.Remove(collision.gameObject);
+            Destroy(collision.gameObject);
             score += 10;
             scoreUI.text = score.ToString();
-            if (remainingAmmo > 0)
+            if (targets.Count == 0 || remainingAmmo == 0)
+            {
+                PlayAgainBtn.SetActive(true);
+            }
+            else
             {
                 remainingAmmoUI[--remainingAmmo].SetActive(false);
                 restrictRBProps();
                 mode = status.Loaded;
             }
         }
+    }
+
+    public void PlayAgain()
+    {
+        PlayAgainBtn.SetActive(false);
+        remainingAmmo = 6;
+        foreach (GameObject obj in remainingAmmoUI)
+        {
+            obj.SetActive(true);
+        }
+        mode = status.Loaded;
+        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
+        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
+        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
+        score = 0;
+        scoreUI.text = "0";
+        restrictRBProps();
     }
 
     void Update()

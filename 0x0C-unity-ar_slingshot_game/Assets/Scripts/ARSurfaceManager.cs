@@ -19,10 +19,6 @@ public class ARSurfaceManager : MonoBehaviour
     /// </summary>
     public ARRaycastManager m_RaycastManager;
     /// <summary>
-    /// The target to hit.
-    /// </summary>
-    public GameObject m_Target;
-    /// <summary>
     /// A UI Panel indicating that plane detection is on.
     /// </summary>
     public GameObject m_searchPanel;
@@ -110,7 +106,6 @@ public class ARSurfaceManager : MonoBehaviour
                     else
                     {
                         plane.GetComponent<NavMeshBuilder>().Select();
-                        Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.32f, 0.0f), Quaternion.identity);
                     }
                 }
                 m_instructionPanel.SetActive(false);
