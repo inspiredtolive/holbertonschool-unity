@@ -19,6 +19,10 @@ public class ARSurfaceManager : MonoBehaviour
     /// </summary>
     public ARRaycastManager m_RaycastManager;
     /// <summary>
+    /// The target to hit.
+    /// </summary>
+    public GameObject m_Target;
+    /// <summary>
     /// A UI Panel indicating that plane detection is on.
     /// </summary>
     public GameObject m_searchPanel;
@@ -30,11 +34,15 @@ public class ARSurfaceManager : MonoBehaviour
     /// A UI Button to start the game.
     /// </summary>
     public GameObject m_startButton;
+    /// <summary>
+    /// The slingshot ammo.
+    /// </summary>
+    public GameObject m_ammo;
     static List<ARRaycastHit> s_Hits = new List<ARRaycastHit>();
     bool m_isPlanesFound = false;
     
     
-    void Awake()
+    void Start()
     {
         m_ARPlaneManager.planesChanged += OnPlanesChanged;
     }
@@ -77,6 +85,12 @@ public class ARSurfaceManager : MonoBehaviour
         return false;
     }
 
+    void GameStart()
+    {
+        m_ammo.SetActive(true);
+        m_startButton.SetActive(false);
+    }
+
     void Update()
     {
         if (m_ARPlaneManager.enabled)
@@ -90,10 +104,19 @@ public class ARSurfaceManager : MonoBehaviour
                 foreach (ARPlane plane in m_ARPlaneManager.trackables)
                 {
                     if (plane.trackableId != s_Hits[0].trackableId)
+                    {
                         plane.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        plane.GetComponent<NavMeshBuilder>().Select();
+                        Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.32f, 0.0f), Quaternion.identity);
+                    }
                 }
                 m_instructionPanel.SetActive(false);
                 m_startButton.SetActive(true);
+                Button btn = m_startButton.GetComponent<Button>();
+                btn.onClick.AddListener(GameStart);
             }
         }
     }
