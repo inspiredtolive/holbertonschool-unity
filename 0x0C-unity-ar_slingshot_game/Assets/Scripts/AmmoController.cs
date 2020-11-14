@@ -36,6 +36,10 @@ public class AmmoController : MonoBehaviour
     /// A list of high score texts.
     /// </summary>
     public List<Text> highScoreTexts;
+    /// <summary>
+    /// The audio source to play sound effects.
+    /// </summary>
+    public SoundEffects SoundEffects;
     int remainingAmmo = 6;
     float distance = 0.25f;
     enum status 
@@ -116,25 +120,42 @@ public class AmmoController : MonoBehaviour
         {
             if (remainingAmmo > 0 && targets.Count != 0)
             {
+                SoundEffects.playMissSound();
                 Reload();
             }
-            else
+            else if (mode == status.Fired)
             {
+                SoundEffects.playGameOverSound();
                 GameOver();
             }
         }
         else if (collision.gameObject.CompareTag("Target"))
         {
-            targets.Remove(collision.gameObject);
+            for (int i = 0; i < targets.Count; i++)
+            {
+                if (GameObject.ReferenceEquals(targets[i], collision.gameObject))
+                {
+                    targets.RemoveAt(i);
+                    break;
+                }
+                
+            }
             Destroy(collision.gameObject);
             score += 10;
             scoreUI.text = score.ToString();
-            if (targets.Count == 0 || remainingAmmo == 0)
+            if (targets.Count == 0)
             {
+                SoundEffects.playWinSound();
+                GameOver();
+            }
+            else if (remainingAmmo == 0)
+            {
+                SoundEffects.playGameOverSound();
                 GameOver();
             }
             else
             {
+                SoundEffects.playHitSound();
                 Reload();
             }
         }
@@ -221,6 +242,7 @@ public class AmmoController : MonoBehaviour
                 case (TouchPhase.Ended):
                     if (mode == status.Firing)
                     {
+                        SoundEffects.playShootSound();
                         releasePos = touch.position;
                         rb.AddForce(CalculateVelocity(), ForceMode.VelocityChange);
                         mode = status.Fired;
@@ -246,6 +268,7 @@ public class AmmoController : MonoBehaviour
                 }
                 else
                 {
+                    SoundEffects.playGameOverSound();
                     GameOver();
                 }
             }
