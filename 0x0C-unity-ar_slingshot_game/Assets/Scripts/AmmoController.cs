@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +32,10 @@ public class AmmoController : MonoBehaviour
     /// A button to replay with the same plane.
     /// </summary>
     public GameObject PlayAgainBtn;
+    /// <summary>
+    /// A list of high score texts.
+    /// </summary>
+    public List<Text> highScoreTexts;
     int remainingAmmo = 6;
     float distance = 0.25f;
     enum status 
@@ -48,6 +53,8 @@ public class AmmoController : MonoBehaviour
     ARPlane plane;
     List<GameObject> targets = new List<GameObject>();
     LineRenderer[] trajectoryLines;
+    int[] highScores = new int[4];
+    string[] scoreNames = { "FirstScore", "SecondScore", "ThirdScore" };
 
     void Start()
     {
@@ -56,17 +63,51 @@ public class AmmoController : MonoBehaviour
         trajectoryLines = GetComponentsInChildren<LineRenderer>();
         footer.SetActive(true);
         plane = GameObject.FindWithTag("Plane").GetComponent<ARPlane>();
-        restrictRBProps();
-        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
-        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
-        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
+        RestrictRBProps();
+        SpawnTargets();
+        LoadHighScores();
     }
 
-    void restrictRBProps()
+    void SaveHighScores()
+    {
+        for (int i = 0; i < scoreNames.Length; i++)
+        {
+            PlayerPrefs.SetInt(scoreNames[i], highScores[i]);
+        }
+    }
+
+    void LoadHighScores()
+    {
+        for (int i = 0; i < scoreNames.Length; i++)
+        {
+            if (PlayerPrefs.HasKey(scoreNames[i]))
+            {
+                highScores[i] = PlayerPrefs.GetInt(scoreNames[i]);
+                highScoreTexts[i].text = highScores[i].ToString();
+            }
+        }
+    }
+
+    void SpawnTargets()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
+        }
+    }
+
+    void RestrictRBProps()
     {
         rb.freezeRotation = true;
         rb.velocity = Vector3.zero;
         rb.useGravity = false;
+    }
+    
+    void Reload()
+    {
+        remainingAmmoUI[--remainingAmmo].SetActive(false);
+        RestrictRBProps();
+        mode = status.Loaded;
     }
 
     void OnCollisionEnter(Collision collision)
@@ -75,14 +116,11 @@ public class AmmoController : MonoBehaviour
         {
             if (remainingAmmo > 0 && targets.Count != 0)
             {
-                remainingAmmoUI[--remainingAmmo].SetActive(false);
-                restrictRBProps();
-                mode = status.Loaded;
+                Reload();
             }
             else
             {
-                mode = status.GameOver;
-                PlayAgainBtn.SetActive(true);
+                GameOver();
             }
         }
         else if (collision.gameObject.CompareTag("Target"))
@@ -93,15 +131,26 @@ public class AmmoController : MonoBehaviour
             scoreUI.text = score.ToString();
             if (targets.Count == 0 || remainingAmmo == 0)
             {
-                mode = status.GameOver;
-                PlayAgainBtn.SetActive(true);
+                GameOver();
             }
             else
             {
-                remainingAmmoUI[--remainingAmmo].SetActive(false);
-                restrictRBProps();
-                mode = status.Loaded;
+                Reload();
             }
+        }
+    }
+
+    void GameOver()
+    {
+        mode = status.GameOver;
+        PlayAgainBtn.SetActive(true);
+        if (score > highScores[2])
+        {
+            highScores[3] = score;
+            Array.Sort(highScores);
+            Array.Reverse(highScores);
+            SaveHighScores();
+            LoadHighScores();
         }
     }
 
@@ -114,12 +163,12 @@ public class AmmoController : MonoBehaviour
             obj.SetActive(true);
         }
         mode = status.Loaded;
-        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
-        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
-        targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
+        foreach (GameObject target in targets)
+            Destroy(target);
+        SpawnTargets();
         score = 0;
         scoreUI.text = "0";
-        restrictRBProps();
+        RestrictRBProps();
     }
 
     Vector3 CalculateVelocity()
@@ -185,7 +234,7 @@ public class AmmoController : MonoBehaviour
         }
         else if (mode == status.Loaded)
         {
-            rb.MovePosition(cam.ScreenPointToRay(new Vector2(Screen.width/2, Screen.height/2)).GetPoint(distance));
+            transform.position = cam.ScreenPointToRay(new Vector2(Screen.width/2, Screen.height/2)).GetPoint(distance);
         }
         else if (mode == status.Fired)
         {
@@ -193,14 +242,11 @@ public class AmmoController : MonoBehaviour
             {
                 if (remainingAmmo > 0)
                 {
-                    remainingAmmoUI[--remainingAmmo].SetActive(false);
-                    restrictRBProps();
-                    mode = status.Loaded;
+                    Reload();
                 }
                 else
                 {
-                    mode = status.GameOver;
-                    PlayAgainBtn.SetActive(true);
+                    GameOver();
                 }
             }
         }
