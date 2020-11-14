@@ -37,7 +37,8 @@ public class AmmoController : MonoBehaviour
     {
         Loaded,
         Firing,
-        Fired
+        Fired,
+        GameOver
     }
     status mode = status.Loaded;
     SphereCollider coll;
@@ -46,11 +47,13 @@ public class AmmoController : MonoBehaviour
     Vector2 releasePos;
     ARPlane plane;
     List<GameObject> targets = new List<GameObject>();
+    LineRenderer[] trajectoryLines;
 
     void Start()
     {
         coll = GetComponent<SphereCollider>();
         rb = GetComponent<Rigidbody>();
+        trajectoryLines = GetComponentsInChildren<LineRenderer>();
         footer.SetActive(true);
         plane = GameObject.FindWithTag("Plane").GetComponent<ARPlane>();
         restrictRBProps();
@@ -70,11 +73,16 @@ public class AmmoController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Plane"))
         {
-            if (remainingAmmo > 0)
+            if (remainingAmmo > 0 && targets.Count != 0)
             {
                 remainingAmmoUI[--remainingAmmo].SetActive(false);
                 restrictRBProps();
                 mode = status.Loaded;
+            }
+            else
+            {
+                mode = status.GameOver;
+                PlayAgainBtn.SetActive(true);
             }
         }
         else if (collision.gameObject.CompareTag("Target"))
@@ -85,6 +93,7 @@ public class AmmoController : MonoBehaviour
             scoreUI.text = score.ToString();
             if (targets.Count == 0 || remainingAmmo == 0)
             {
+                mode = status.GameOver;
                 PlayAgainBtn.SetActive(true);
             }
             else
@@ -113,6 +122,13 @@ public class AmmoController : MonoBehaviour
         restrictRBProps();
     }
 
+    Vector3 CalculateVelocity()
+    {
+        Vector3 dir = new Vector3(initalPos.x - releasePos.x, initalPos.y - releasePos.y, 0).normalized;
+        dir = Quaternion.AngleAxis(30, cam.transform.right) * dir;
+        return dir * Vector2.Distance(initalPos, releasePos) / Screen.height * 8;
+    }
+
     void Update()
     {
         if (Input.touchCount > 0)
@@ -130,6 +146,8 @@ public class AmmoController : MonoBehaviour
                         initalPos = touch.position;
                         transform.position = ray.GetPoint(distance);
                         mode = status.Firing;
+                        foreach (LineRenderer lr in trajectoryLines)
+                            lr.enabled = true;
                     }
                     break;
 
@@ -137,6 +155,17 @@ public class AmmoController : MonoBehaviour
                     if (mode == status.Firing)
                     {
                         rb.MovePosition(ray.GetPoint(distance));
+                        releasePos = touch.position;
+                        Vector3 vi = CalculateVelocity();
+                        int i = 0;
+                        foreach (LineRenderer lr in trajectoryLines)
+                        {
+                            for (int j = 0; j < lr.positionCount; j++, i++)
+                            {
+                                float t = i * 0.06f;
+                                lr.SetPosition(j, vi * t + 0.5f * Physics.gravity * Mathf.Pow(t, 2) + transform.position);
+                            }
+                        }
                     }
                     break;
                 
@@ -144,10 +173,10 @@ public class AmmoController : MonoBehaviour
                     if (mode == status.Firing)
                     {
                         releasePos = touch.position;
-                        Vector3 dir = new Vector3(initalPos.x - releasePos.x, initalPos.y - releasePos.y, 0).normalized;
-                        dir = Quaternion.AngleAxis(30, cam.transform.right) * dir;
-                        rb.AddForce(dir * Vector2.Distance(initalPos, releasePos) / Screen.height * 8, ForceMode.Impulse);
+                        rb.AddForce(CalculateVelocity(), ForceMode.VelocityChange);
                         mode = status.Fired;
+                        foreach (LineRenderer lr in trajectoryLines)
+                            lr.enabled = false;
                         rb.freezeRotation = false;
                         rb.useGravity = true;
                     }
@@ -167,6 +196,11 @@ public class AmmoController : MonoBehaviour
                     remainingAmmoUI[--remainingAmmo].SetActive(false);
                     restrictRBProps();
                     mode = status.Loaded;
+                }
+                else
+                {
+                    mode = status.GameOver;
+                    PlayAgainBtn.SetActive(true);
                 }
             }
         }
