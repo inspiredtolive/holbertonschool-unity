@@ -10,11 +10,13 @@ using UnityEngine.XR.ARFoundation;
 public class TargetController : MonoBehaviour
 {
     NavMeshAgent agent;
+    Animator animator;
     float walkRadius = 0.5f;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
         RandomSpawn();
         Invoke("NavMeshMove", Random.Range(2.5f, 3.5f));
     }
@@ -42,5 +44,10 @@ public class TargetController : MonoBehaviour
             agent.SetDestination(finalPosition);
         }
         Invoke("NavMeshMove", Random.Range(2.5f, 3.5f));
+    }
+
+    void Update()
+    {
+        animator.SetFloat("speed", agent.velocity.magnitude);
     }
 }

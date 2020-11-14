@@ -92,7 +92,7 @@ public class AmmoController : MonoBehaviour
     {
         for (int i = 0; i < 7; i++)
         {
-            targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.16f, 0.0f), Quaternion.identity));
+            targets.Add(Instantiate(m_Target, plane.center + new Vector3(0.0f, 0.14f, 0.0f), Quaternion.identity));
         }
     }
 
