@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6879741529724332826
+--- !u!114 &-992124639650225195
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: glow
-  m_Shader: {fileID: -6465566751694194690, guid: 51d2218fbd8c9f24f9bde4e8332c9031,
+  m_Name: glow_animated
+  m_Shader: {fileID: -6465566751694194690, guid: a8cf82f2ecbd6874ab5059449c4eee32,
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -87,8 +87,8 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_C71E6C00: {r: 0.33333334, g: 0.9372549, b: 0.76862746, a: 0}
-    - Color_D0BE8F3A: {r: 0, g: 0.72156864, b: 0.5803922, a: 0}
+    - Color_C71E6C00: {r: 0.5058824, g: 0.9254902, b: 0.9254902, a: 0}
+    - Color_D0BE8F3A: {r: 0.1764706, g: 0.20392157, b: 0.21176471, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
